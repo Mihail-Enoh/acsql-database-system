@@ -394,75 +394,112 @@ void proceseaza_update(secretariat *db, char *comanda) {
 
     if (strstr(tabel, "studenti")) {
         for (int i = 0; i < db->nr_studenti; i++) {
-            int poate_modifica = 0, poate_modifica_complex = 0;
+            int poate_modifica = 0, poate_modifica_greu = 0;
 
             if (strstr(camp_where, "id")) {
                 poate_modifica = compara_operator((float)db->studenti[i].id, operator, valoare_where);
             } else if (strstr(camp_where, "nume")) {
                 poate_modifica = compara_operator_nume(db->studenti[i].nume, operator, valoare_where);
-            }
-            else if (strstr(camp_where, "an_studiu")) {
+            } else if (strstr(camp_where, "an_studiu")) {
                 poate_modifica = compara_operator((float)db->studenti[i].an_studiu, operator, valoare_where);
             } else if (strstr(camp_where, "statut")) {
-                if (strcmp(operator, "=") == 0) poate_modifica = (db->studenti[i].statut == valoare_where[0]);
-                else if (strcmp(operator, "!=") == 0) poate_modifica = (db->studenti[i].statut != valoare_where[0]);
+                if (strcmp(operator, "=") == 0) {
+                    poate_modifica = (db->studenti[i].statut == valoare_where[0]);
+                } else if (strcmp(operator, "!=") == 0) {
+                    poate_modifica = (db->studenti[i].statut != valoare_where[0]);
+                }
             } else if (strstr(camp_where, "medie_generala")) {
                 poate_modifica = compara_operator(db->studenti[i].medie_generala, operator, valoare_where);
             }
-            
+
             if (poate_modifica && caz_special) {
-                if (strstr(camp_and, "id")) poate_modifica_complex = compara_operator((float)db->studenti[i].id, operator2, valoare_and);
-                else if (strstr(camp_and, "nume")) poate_modifica_complex = compara_operator_nume(db->studenti[i].nume, operator2, valoare_and);
-                else if (strstr(camp_and, "an_studiu")) poate_modifica_complex = compara_operator((float)db->studenti[i].an_studiu, operator2, valoare_and);
-                else if (strstr(camp_and, "statut")) {
-                    if (strcmp(operator2, "=") == 0) poate_modifica_complex = (db->studenti[i].statut == valoare_and[0]);
-                    else if (strcmp(operator2, "!=") == 0) poate_modifica_complex = (db->studenti[i].statut != valoare_and[0]);
-                } else if (strstr(camp_and, "medie_generala")) poate_modifica_complex = compara_operator(db->studenti[i].medie_generala, operator2, valoare_and);
+                if (strstr(camp_and, "id")) {
+                    poate_modifica_greu = compara_operator((float)db->studenti[i].id, operator2, valoare_and);
+                } else if (strstr(camp_and, "nume")) {
+                    poate_modifica_greu = compara_operator_nume(db->studenti[i].nume, operator2, valoare_and);
+                } else if (strstr(camp_and, "an_studiu")) {
+                    poate_modifica_greu = compara_operator((float)db->studenti[i].an_studiu, operator2, valoare_and);
+                } else if (strstr(camp_and, "statut")) {
+                    if (strcmp(operator2, "=") == 0) {
+                        poate_modifica_greu = (db->studenti[i].statut == valoare_and[0]);
+                    } else if (strcmp(operator2, "!=") == 0) {
+                        poate_modifica_greu = (db->studenti[i].statut != valoare_and[0]);
+                    }
+                } else if (strstr(camp_and, "medie_generala")) {
+                    poate_modifica_greu = compara_operator(db->studenti[i].medie_generala, operator2, valoare_and);
+                }
             }
-            
-            if ((poate_modifica && poate_modifica_complex && caz_special) || (poate_modifica && !caz_special)) {
-                if (strstr(camp, "nume") && !strstr(camp, "nume_titular")) strncpy(db->studenti[i].nume, valoare, MAX_STUDENT_NAME - 1);
-                else if (strstr(camp, "an_studiu")) db->studenti[i].an_studiu = atoi(valoare);
-                else if (strstr(camp, "statut")) db->studenti[i].statut = valoare[0];
-                else if (strstr(camp, "medie_generala")) db->studenti[i].medie_generala = (float)atof(valoare);
+
+            if ((poate_modifica && poate_modifica_greu && caz_special) || (poate_modifica && !caz_special)) {
+                if (strstr(camp, "nume") && !strstr(camp, "nume_titular")) {
+                    strncpy(db->studenti[i].nume, valoare, MAX_STUDENT_NAME - 1);
+                } else if (strstr(camp, "id")) {
+                    db->studenti[i].id = atoi(valoare);
+                } else if (strstr(camp, "an_studiu")) {
+                    db->studenti[i].an_studiu = atoi(valoare);
+                } else if (strstr(camp, "statut")) {
+                    db->studenti[i].statut = valoare[0];
+                } else if (strstr(camp, "medie_generala")) {
+                    db->studenti[i].medie_generala = (float)atof(valoare);
+                }
             }
         }
     } else if (strstr(tabel, "materii")) {
         for (int i = 0; i < db->nr_materii; i++) {
-            int poate_modifica = 0, poate_modifica_complex = 0;
-            
-            if (strstr(camp_where, "id")) poate_modifica = compara_operator((float)db->materii[i].id, operator, valoare_where);
-            else if (strstr(camp_where, "nume_titular")) poate_modifica = compara_operator_nume(db->materii[i].nume_titular, operator, valoare_where);
-            else if (strstr(camp_where, "nume")) poate_modifica = compara_operator_nume(db->materii[i].nume, operator, valoare_where);
-            
-            if (poate_modifica && caz_special) {
-                if (strstr(camp_and, "id")) poate_modifica_complex = compara_operator((float)db->materii[i].id, operator2, valoare_and);
-                else if (strstr(camp_and, "nume_titular")) poate_modifica_complex = compara_operator_nume(db->materii[i].nume_titular, operator2, valoare_and);
-                else if (strstr(camp_and, "nume")) poate_modifica_complex = compara_operator_nume(db->materii[i].nume, operator2, valoare_and);
+            int poate_modifica = 0, poate_modifica_greu = 0;
+
+            if (strstr(camp_where, "id")) {
+                poate_modifica = compara_operator((float)db->materii[i].id, operator, valoare_where);
+            } else if (strstr(camp_where, "nume_titular")) {
+                poate_modifica = compara_operator_nume(db->materii[i].nume_titular, operator, valoare_where);
+            } else if (strstr(camp_where, "nume")) {
+                poate_modifica = compara_operator_nume(db->materii[i].nume, operator, valoare_where);
             }
-            
-            if ((poate_modifica && poate_modifica_complex && caz_special) || (poate_modifica && !caz_special)) {
+
+            if (poate_modifica && caz_special) {
+                if (strstr(camp_and, "id")) {
+                    poate_modifica_greu = compara_operator((float)db->materii[i].id, operator2, valoare_and);
+                } else if (strstr(camp_and, "nume_titular")) {
+                    poate_modifica_greu = compara_operator_nume(db->materii[i].nume_titular, operator2, valoare_and);
+                } else if (strstr(camp_and, "nume")) {
+                    poate_modifica_greu = compara_operator_nume(db->materii[i].nume, operator2, valoare_and);
+                }
+            }
+
+            if ((poate_modifica && poate_modifica_greu && caz_special) || (poate_modifica && !caz_special)) {
                 if (strstr(camp, "nume_titular")) strncpy(db->materii[i].nume_titular, valoare, MAX_CHAR - 1);
                 else if (strstr(camp, "nume")) strncpy(db->materii[i].nume, valoare, MAX_CHAR - 1);
             }
         }
     } else if (strstr(tabel, "inrolari")) {
         for (int i = 0; i < db->nr_inrolari; i++) {
-            int poate_modifica = 0, poate_modifica_complex = 0;
-            
-            if (strstr(camp_where, "id_student")) poate_modifica = compara_operator((float)db->inrolari[i].id_student, operator, valoare_where);
-            else if (strstr(camp_where, "id_materie")) poate_modifica = compara_operator((float)db->inrolari[i].id_materie, operator, valoare_where);
-            
-            if (poate_modifica && caz_special) {
-                if (strstr(camp_and, "id_student")) poate_modifica_complex = compara_operator((float)db->inrolari[i].id_student, operator2, valoare_and);
-                else if (strstr(camp_and, "id_materie")) poate_modifica_complex = compara_operator((float)db->inrolari[i].id_materie, operator2, valoare_and);
+            int poate_modifica = 0, poate_modifica_greu = 0;
+
+            if (strstr(camp_where, "id_student")) {
+                poate_modifica = compara_operator((float)db->inrolari[i].id_student, operator, valoare_where);
+            } else if (strstr(camp_where, "id_materie")) {
+                poate_modifica = compara_operator((float)db->inrolari[i].id_materie, operator, valoare_where);
+            } else if (strstr(camp_where, "note")) {
+                poate_modifica = compara_operator(db->inrolari[i].note[0] +
+                    db->inrolari[i].note[1] + db->inrolari[i].note[2], operator, valoare_where);
             }
-            
-            if ((poate_modifica && poate_modifica_complex && caz_special) || (poate_modifica && !caz_special)) {
+            if (poate_modifica && caz_special) {
+                if (strstr(camp_and, "id_student")) {
+                    poate_modifica_greu = compara_operator((float)db->inrolari[i].id_student, operator2, valoare_and);
+                } else if (strstr(camp_and, "id_materie")) {
+                    poate_modifica_greu = compara_operator((float)db->inrolari[i].id_materie, operator2, valoare_and);
+                } else if (strstr(camp_and, "note")) {
+                    poate_modifica_greu = compara_operator(db->inrolari[i].note[0] +
+                        db->inrolari[i].note[1] + db->inrolari[i].note[2], operator2, valoare_and);
+                }
+            }
+            if ((poate_modifica && poate_modifica_greu && caz_special) || (poate_modifica && !caz_special)) {
                 modificari_la_inrolare = 1;
-                if (strstr(camp, "id_student")) db->inrolari[i].id_student = atoi(valoare);
-                else if (strstr(camp, "id_materie")) db->inrolari[i].id_materie = atoi(valoare);
-                else if (strstr(camp, "note")) {
+                if (strstr(camp, "id_student")) {
+                    db->inrolari[i].id_student = atoi(valoare);
+                } else if (strstr(camp, "id_materie")) {
+                    db->inrolari[i].id_materie = atoi(valoare);
+                } else if (strstr(camp, "note")) {
                     db->inrolari[i].note[0] = nota_1;
                     db->inrolari[i].note[1] = nota_2;
                     db->inrolari[i].note[2] = nota_3;
@@ -470,22 +507,22 @@ void proceseaza_update(secretariat *db, char *comanda) {
             }
         }
     }
-    
+
     if (modificari_la_inrolare) {
         recalculeaza_medii(db);
     }
-    
-    free(tabel); free(camp); free(valoare); free(camp_where); 
-    free(operator); free(valoare_where); free(camp_and); 
+
+    free(tabel); free(camp); free(valoare); free(camp_where);
+    free(operator); free(valoare_where); free(camp_and);
     free(operator2); free(valoare_and);
 }
 
 void proceseaza_delete(secretariat *db, char *comanda) {
     if (!strstr(comanda, "DELETE")) return;
-    
+
     int caz_special = 0;
     if (strstr(comanda, "AND")) caz_special = 1;
-    
+
     char *tabel = calloc(MAX_CHAR, sizeof(char));
     char *camp_where = calloc(MAX_CHAR, sizeof(char));
     char *operator = calloc(MAX_CHAR, sizeof(char));
@@ -494,24 +531,24 @@ void proceseaza_delete(secretariat *db, char *comanda) {
     char *operator2 = calloc(MAX_CHAR, sizeof(char));
     char *valoare_and = calloc(MAX_CHAR, sizeof(char));
     int modificari_la_inrolare = 0;
-    
+
     if (!tabel || !camp_where || !operator || !valoare_where) {
         free(tabel); free(camp_where); free(operator); free(valoare_where);
         return;
     }
-    
+
     if (sscanf(comanda, "DELETE FROM %255[^ ] WHERE %255s %255s %255[^;];",
                 tabel, camp_where, operator, valoare_where) != 4) {
         free(tabel); free(camp_where); free(operator); free(valoare_where);
         return;
     }
-    
+
     if (caz_special) {
         char valoare_where_copy[MAX_CHAR];
         strncpy(valoare_where_copy, valoare_where, MAX_CHAR - 1);
         char *aux = strtok(valoare_where_copy, " ");
         if (aux) strncpy(valoare_where, aux, MAX_CHAR - 1);
-        aux = strtok(NULL, " "); // AND
+        aux = strtok(NULL, " ");  // AND
         aux = strtok(NULL, " ");
         if (aux) strncpy(camp_and, aux, MAX_CHAR - 1);
         aux = strtok(NULL, " ");
@@ -519,32 +556,48 @@ void proceseaza_delete(secretariat *db, char *comanda) {
         aux = strtok(NULL, " ");
         if (aux) strncpy(valoare_and, aux, MAX_CHAR - 1);
     }
-    
+
     if (strstr(tabel, "studenti")) {
         for (int i = 0; i < db->nr_studenti; i++) {
-            int poate_sterge = 0, poate_sterge_complex = 0;
-            
-            if (strstr(camp_where, "id")) poate_sterge = compara_operator((float)db->studenti[i].id, operator, valoare_where);
-            else if (strstr(camp_where, "nume")) poate_sterge = compara_operator_nume(db->studenti[i].nume, operator, valoare_where);
-            else if (strstr(camp_where, "an_studiu")) poate_sterge = compara_operator((float)db->studenti[i].an_studiu, operator, valoare_where);
-            else if (strstr(camp_where, "statut")) {
-                if (strcmp(operator, "=") == 0) poate_sterge = (db->studenti[i].statut == valoare_where[0]);
-                else if (strcmp(operator, "!=") == 0) poate_sterge = (db->studenti[i].statut != valoare_where[0]);
-            } else if (strstr(camp_where, "medie_generala")) poate_sterge = compara_operator(db->studenti[i].medie_generala, operator, valoare_where);
-            
-            if (caz_special && poate_sterge) {
-                if (strstr(camp_and, "id")) poate_sterge_complex = compara_operator((float)db->studenti[i].id, operator2, valoare_and);
-                else if (strstr(camp_and, "nume")) poate_sterge_complex = compara_operator_nume(db->studenti[i].nume, operator2, valoare_and);
-                else if (strstr(camp_and, "an_studiu")) poate_sterge_complex = compara_operator((float)db->studenti[i].an_studiu, operator2, valoare_and);
-                else if (strstr(camp_and, "statut")) {
-                    if (strcmp(operator2, "=") == 0) poate_sterge_complex = (db->studenti[i].statut == valoare_and[0]);
-                    else if (strcmp(operator2, "!=") == 0) poate_sterge_complex = (db->studenti[i].statut != valoare_and[0]);
-                } else if (strstr(camp_and, "medie_generala")) poate_sterge_complex = compara_operator(db->studenti[i].medie_generala, operator2, valoare_and);
+            int poate_sterge = 0, poate_sterge_greu = 0;
+
+            if (strstr(camp_where, "id")) {
+                poate_sterge = compara_operator((float)db->studenti[i].id, operator, valoare_where);
+            } else if (strstr(camp_where, "nume")) {
+                poate_sterge = compara_operator_nume(db->studenti[i].nume, operator, valoare_where);
+            } else if (strstr(camp_where, "an_studiu")) {
+                poate_sterge = compara_operator((float)db->studenti[i].an_studiu, operator, valoare_where);
+            } else if (strstr(camp_where, "statut")) {
+                if (strcmp(operator, "=") == 0) {
+                    poate_sterge = (db->studenti[i].statut == valoare_where[0]);
+                } else if (strcmp(operator, "!=") == 0) {
+                    poate_sterge = (db->studenti[i].statut != valoare_where[0]);
+                }
+            } else if (strstr(camp_where, "medie_generala")) {
+                poate_sterge = compara_operator(db->studenti[i].medie_generala, operator, valoare_where);
             }
-            
-            if ((poate_sterge && !caz_special) || (poate_sterge && poate_sterge_complex && caz_special)) {
+
+            if (caz_special && poate_sterge) {
+                if (strstr(camp_and, "id")) {
+                    poate_sterge_greu = compara_operator((float)db->studenti[i].id, operator2, valoare_and);
+                } else if (strstr(camp_and, "nume")) {
+                    poate_sterge_greu = compara_operator_nume(db->studenti[i].nume, operator2, valoare_and);
+                } else if (strstr(camp_and, "an_studiu")) {
+                    poate_sterge_greu = compara_operator((float)db->studenti[i].an_studiu, operator2, valoare_and);
+                } else if (strstr(camp_and, "statut")) {
+                    if (strcmp(operator2, "=") == 0) {
+                        poate_sterge_greu = (db->studenti[i].statut == valoare_and[0]);
+                    } else if (strcmp(operator2, "!=") == 0) {
+                        poate_sterge_greu = (db->studenti[i].statut != valoare_and[0]);
+                    }
+                } else if (strstr(camp_and, "medie_generala")) {
+                    poate_sterge_greu = compara_operator(db->studenti[i].medie_generala, operator2, valoare_and);
+                }
+            }
+
+            if ((poate_sterge && !caz_special) || (poate_sterge && poate_sterge_greu && caz_special)) {
                 int id_sters = db->studenti[i].id;
-                
+
                 // Șterge înrolările asociate acestui student
                 for (int j = 0; j < db->nr_inrolari; j++) {
                     if (db->inrolari[j].id_student == id_sters) {
@@ -555,33 +608,40 @@ void proceseaza_delete(secretariat *db, char *comanda) {
                         j--;
                     }
                 }
-                
+
                 // Șterge studentul (ID-urile RĂMÂN NESCHIMBATE - nu se actualizează!)
                 db->nr_studenti--;
                 for (int j = i; j < db->nr_studenti; j++) {
-                    db->studenti[j] = db->studenti[j + 1];
-                    // NU modificăm db->studenti[j].id - rămâne ce a fost!
+                    db->studenti[j] = db->studenti[j + 1];  // NU modificăm db->studenti[j].id - rămâne ce a fost!
                 }
-                
+
                 modificari_la_inrolare = 1;
                 i--;
             }
         }
     } else if (strstr(tabel, "materii")) {
         for (int i = 0; i < db->nr_materii; i++) {
-            int poate_sterge = 0, poate_sterge_complex = 0;
-            
-            if (strstr(camp_where, "id")) poate_sterge = compara_operator((float)db->materii[i].id, operator, valoare_where);
-            else if (strstr(camp_where, "nume_titular")) poate_sterge = compara_operator_nume(db->materii[i].nume_titular, operator, valoare_where);
-            else if (strstr(camp_where, "nume")) poate_sterge = compara_operator_nume(db->materii[i].nume, operator, valoare_where);
-            
-            if (caz_special && poate_sterge) {
-                if (strstr(camp_and, "id")) poate_sterge_complex = compara_operator((float)db->materii[i].id, operator2, valoare_and);
-                else if (strstr(camp_and, "nume_titular")) poate_sterge_complex = compara_operator_nume(db->materii[i].nume_titular, operator2, valoare_and);
-                else if (strstr(camp_and, "nume")) poate_sterge_complex = compara_operator_nume(db->materii[i].nume, operator2, valoare_and);
+            int poate_sterge = 0, poate_sterge_greu = 0;
+
+            if (strstr(camp_where, "id")) {
+                poate_sterge = compara_operator((float)db->materii[i].id, operator, valoare_where);
+            } else if (strstr(camp_where, "nume_titular")) {
+                poate_sterge = compara_operator_nume(db->materii[i].nume_titular, operator, valoare_where);
+            } else if (strstr(camp_where, "nume")) {
+                poate_sterge = compara_operator_nume(db->materii[i].nume, operator, valoare_where);
             }
-            
-            if ((poate_sterge && !caz_special) || (poate_sterge && poate_sterge_complex && caz_special)) {
+
+            if (caz_special && poate_sterge) {
+                if (strstr(camp_and, "id")) {
+                    poate_sterge_greu = compara_operator((float)db->materii[i].id, operator2, valoare_and);
+                } else if (strstr(camp_and, "nume_titular")) {
+                    poate_sterge_greu = compara_operator_nume(db->materii[i].nume_titular, operator2, valoare_and);
+                } else if (strstr(camp_and, "nume")) {
+                    poate_sterge_greu = compara_operator_nume(db->materii[i].nume, operator2, valoare_and);
+                }
+            }
+
+            if ((poate_sterge && !caz_special) || (poate_sterge && poate_sterge_greu && caz_special)) {
                 if (db->materii[i].nume) {
                     free(db->materii[i].nume);
                     db->materii[i].nume = NULL;
@@ -599,19 +659,29 @@ void proceseaza_delete(secretariat *db, char *comanda) {
         }
     } else if (strstr(tabel, "inrolari")) {
         for (int i = 0; i < db->nr_inrolari; i++) {
-            int poate_sterge = 0, poate_sterge_complex = 0;
-            
-            if (strstr(camp_where, "id_student")) poate_sterge = compara_operator((float)db->inrolari[i].id_student, operator, valoare_where);
-            else if (strstr(camp_where, "id_materie")) poate_sterge = compara_operator((float)db->inrolari[i].id_materie, operator, valoare_where);
-            else if (strstr(camp_where, "note")) poate_sterge = compara_operator(db->inrolari[i].note[0] + db->inrolari[i].note[1] + db->inrolari[i].note[2], operator, valoare_where);
-            
-            if (caz_special && poate_sterge) {
-                if (strstr(camp_and, "id_student")) poate_sterge_complex = compara_operator((float)db->inrolari[i].id_student, operator2, valoare_and);
-                else if (strstr(camp_and, "id_materie")) poate_sterge_complex = compara_operator((float)db->inrolari[i].id_materie, operator2, valoare_and);
-                else if (strstr(camp_and, "note")) poate_sterge_complex = compara_operator(db->inrolari[i].note[0] + db->inrolari[i].note[1] + db->inrolari[i].note[2], operator2, valoare_and);
+            int poate_sterge = 0, poate_sterge_greu = 0;
+
+            if (strstr(camp_where, "id_student")) {
+                poate_sterge = compara_operator((float)db->inrolari[i].id_student, operator, valoare_where);
+            } else if (strstr(camp_where, "id_materie")) {
+                poate_sterge = compara_operator((float)db->inrolari[i].id_materie, operator, valoare_where);
+            } else if (strstr(camp_where, "note")) {
+                poate_sterge = compara_operator(db->inrolari[i].note[0] +
+                    db->inrolari[i].note[1] + db->inrolari[i].note[2], operator, valoare_where);
             }
-            
-            if ((poate_sterge && !caz_special) || (poate_sterge && poate_sterge_complex && caz_special)) {
+
+            if (caz_special && poate_sterge) {
+                if (strstr(camp_and, "id_student")) {
+                    poate_sterge_greu = compara_operator((float)db->inrolari[i].id_student, operator2, valoare_and);
+                } else if (strstr(camp_and, "id_materie")) {
+                    poate_sterge_greu = compara_operator((float)db->inrolari[i].id_materie, operator2, valoare_and);
+                } else if (strstr(camp_and, "note")) {
+                    poate_sterge_greu = compara_operator(db->inrolari[i].note[0] +
+                        db->inrolari[i].note[1] + db->inrolari[i].note[2], operator2, valoare_and);
+                }
+            }
+
+            if ((poate_sterge && !caz_special) || (poate_sterge && poate_sterge_greu && caz_special)) {
                 modificari_la_inrolare = 1;
                 for (int j = i; j < db->nr_inrolari - 1; j++) {
                     db->inrolari[j] = db->inrolari[j + 1];
@@ -621,11 +691,11 @@ void proceseaza_delete(secretariat *db, char *comanda) {
             }
         }
     }
-    
+
     if (modificari_la_inrolare) {
         recalculeaza_medii(db);
     }
-    
+
     free(tabel); free(camp_where); free(operator); free(valoare_where);
     free(camp_and); free(operator2); free(valoare_and);
 }
@@ -635,16 +705,16 @@ int main(int argc, char *argv[]) {
         printf("Eroare: Nu a fost specificat niciun fișier de intrare.\n");
         return 1;
     }
-    
+
     char *delimitator_fisier = strstr(argv[1], ":");
     if (delimitator_fisier) *delimitator_fisier = '\0';
-    
+
     secretariat *db = citeste_secretariat(argv[1]);
     if (!db) {
         printf("Eroare: Citirea bazei de date a eșuat.\n");
         return 1;
     }
-    
+
     int numar_comenzi = 0;
     char linie[MAX_CHAR];
     if (fgets(linie, sizeof(linie), stdin) == NULL) {
@@ -655,7 +725,7 @@ int main(int argc, char *argv[]) {
         printf("Eroare!\n");
         return 1;
     }
-    
+
     char comanda[MAX_CHAR];
     for (int i = 0; i < numar_comenzi; i++) {
         if (fgets(comanda, sizeof(comanda), stdin) == NULL) {
@@ -663,7 +733,7 @@ int main(int argc, char *argv[]) {
             break;
         }
         comanda[strcspn(comanda, "\n")] = 0;
-        
+
         if (strstr(comanda, "UPDATE")) {
             proceseaza_update(db, comanda);
         } else if (strstr(comanda, "DELETE")) {
@@ -674,7 +744,7 @@ int main(int argc, char *argv[]) {
             printf("Comanda %d necunoscuta: %s\n", i + 1, comanda);
         }
     }
-    
+
     elibereaza_secretariat(&db);
     return 0;
 }

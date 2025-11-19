@@ -5,7 +5,7 @@
 #include "../src/task1.h"
 #include "../src/task3.h"
 #include "../checker/helper.h"
-#define TEST_DB "tests/db/small.db"
+#define TEST_DB "tests/db/database1.db"
 #define EPSILON 0.001
 
 int eps_eq(float a, float b) {

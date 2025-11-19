@@ -75,14 +75,16 @@ def check_task_2():
 
     print("\n🔹 TASK 2")
     print("=" * 60)
-
-    # Obține și sortează listele de baze de date și teste
-    databases = sorted([db for db in os.listdir("tests/db") 
+    #databaseurile din tests/db sunt numite de forma databaseX.db
+    databases = [db for db in os.listdir("tests/db")
                        if os.path.isfile(os.path.join("tests/db", db)) 
-                       and ":Zone.Identifier" not in db])
-    
-    tests = sorted([test for test in os.listdir("tests/input") 
-                   if ":Zone.Identifier" not in test])
+                       and ":Zone.Identifier" not in db]
+    tests = [test for test in os.listdir("tests/input") 
+                   if ":Zone.Identifier" not in test]
+    def sort_key_test(test_name):
+        num_part = test_name.replace("test", "").replace(".in", "")
+        return int(num_part)
+    tests.sort(key=sort_key_test)
 
     for database in databases:
         print(f"\n📁 Database: {database}")
@@ -142,7 +144,6 @@ def check_task_3():
 
     points = 0
     
-    # Sortează și filtrează testele
     databases = sorted([db for db in os.listdir("tests/db/task3/")
                        if os.path.isfile(os.path.join("tests/db/task3", db))
                        and ":Zone.Identifier" not in db])
